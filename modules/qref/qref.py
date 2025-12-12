@@ -1,3 +1,9 @@
+# Copyright (c) 2024 Kristoffer Lundgren
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# This file is part of a project licensed under the BSD 3-Clause License.
+# See the LICENSE file in the project root for details.
+
 from __future__ import division
 import os
 import sys
