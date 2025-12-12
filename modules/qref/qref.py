@@ -72,23 +72,21 @@ def read_energy_and_gradient_from_orca(infile: str):
     energy = None
     gradients = list()
     with open(infile, 'r') as file:
-        line = file.readline()
-        # Process header
-        while line:
+        # Extract number of atoms and total energy
+        for line in file
             if line == '# Number of atoms\n':
-                file.readline()
-                n_atoms = int(file.readline().strip())
+                next(file)
+                n_atoms = int(next(file).strip())
             elif line == '# The current total energy in Eh\n':
-                file.readline()
-                energy = float(file.readline().strip())
+                next(file)
+                energy = float(next(file).strip())
                 break
-            line = file.readline()
         # Skip three lines
         for _ in range(3):
-            next(file, None)
+            next(file)
         # Read gradients
         for _ in range(n_atoms):
-            g = (float(file.readline()), float(file.readline()), float(file.readline()))
+            g = (float(next(file)), float(next(file)), float(next(file)))
             gradients.append(g)
     return energy, gradients
 
