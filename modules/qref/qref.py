@@ -63,21 +63,26 @@ def write_pdb_h(outfile, model, link_pairs, g, serial_to_index):
     hierarchy.write_pdb_file(file_name=outfile, crystal_symmetry=model.crystal_symmetry(), anisou=False)
 
 
-def read_energy_and_gradient_from_orca(infile):
+def read_energy_and_gradient_from_orca(infile: str):
+    energy = None
     gradients = list()
     with open(infile, 'r') as file:
         line = file.readline()
+        # Process header
         while line:
             if line == '# Number of atoms\n':
                 file.readline()
                 n_atoms = int(file.readline().strip())
-            if line == '# The current total energy in Eh\n':
+            elif line == '# The current total energy in Eh\n':
                 file.readline()
                 energy = float(file.readline().strip())
                 break
             line = file.readline()
-        for i in range(3): file.readline()
-        for i in range(n_atoms):
+        # Skip three lines
+        for _ in range(3):
+            next(file, None)
+        # Read gradients
+        for _ in range(n_atoms):
             g = (float(file.readline()), float(file.readline()), float(file.readline()))
             gradients.append(g)
     return energy, gradients
@@ -112,7 +117,8 @@ def update_file_coordinates(infile, sites_cart):
             if line[0:6].strip() in records:
                 serial = int(line[6:11].strip())
                 coords = ''
-                for i in range(3): coords += '{:.3f}'.format(round(sites_cart[serial-1][i], 3)).rjust(width)
+                for i in range(3):
+                    coords += '{:.3f}'.format(round(sites_cart[serial-1][i], 3)).rjust(width)
                 line = line[0:30] + coords + line[54:]
             file.write(line)
 
@@ -121,7 +127,8 @@ def restore_serial_in_model(model, serial_to_index):
     index_to_serial = {value: key for key, value in serial_to_index.items()}
     atoms = model.get_hierarchy().atoms()
     width = 5
-    for atom in atoms: atom.serial = str(index_to_serial[int(atom.serial) - 1]).rjust(width)
+    for atom in atoms:
+        atom.serial = str(index_to_serial[int(atom.serial) - 1]).rjust(width)
 
 
 def logging(index, w_qm, qm_energy, mm_energy, mm1_energy):
